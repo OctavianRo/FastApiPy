@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status, HTTPException
 from fastapi.params import Body
 from pydantic import BaseModel
 from typing import Optional
@@ -37,6 +37,9 @@ def create_post(post: Post): # we are going to validate the data based on the py
 
 @app.get("/posts/{id}")
 def get_post(id: int): # this is a path parameter
+    
     post = find_post(int(id))
-    print(post)
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id: {id} was not found")
+        
     return {"post_detail": post}
