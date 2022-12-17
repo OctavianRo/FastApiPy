@@ -15,6 +15,10 @@ class Post(BaseModel):
 
 my_posts = [{"title": "title of post 1", "content": "content of post 1", "id": 1}, {"title": "favourite foods", "content": "I like pizza", "id": 2}]
 
+def find_post(id):
+    for p in my_posts:
+        if p["id"] == id:
+            return p
 
 @app.get("/")
 def root():
@@ -32,6 +36,7 @@ def create_post(post: Post): # we are going to validate the data based on the py
     return {"data": post_dict}
 
 @app.get("/posts/{id}")
-def get_post(id): # this is a path parameter
-    print(id)
-    return {"post_detail": f"here is post {id}"}
+def get_post(id: int): # this is a path parameter
+    post = find_post(int(id))
+    print(post)
+    return {"post_detail": post}
