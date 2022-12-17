@@ -20,6 +20,12 @@ def find_post(id):
         if p["id"] == id:
             return p
 
+def find_index_post(id):
+    for i, p in enumerate(my_posts):
+        if p['id'] == id:
+            return i
+
+
 @app.get("/")
 def root():
     return {"message": "Welcome to the API"}
@@ -28,7 +34,7 @@ def root():
 def get_posts():
     return {"data":my_posts}
 
-@app.post("/posts")
+@app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post: Post): # we are going to validate the data based on the pydantic model
     post_dict = post.dict()
     post_dict["id"] = randrange(0, 1000000)
@@ -41,5 +47,14 @@ def get_post(id: int): # this is a path parameter
     post = find_post(int(id))
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id: {id} was not found")
-        
     return {"post_detail": post}
+
+
+@app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(id: int):
+    index = find_index_post(id)
+
+    if index == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id: {id} does not exist") 
+    my_posts.pop(index)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
