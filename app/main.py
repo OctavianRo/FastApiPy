@@ -3,6 +3,8 @@ from fastapi.params import Body
 from pydantic import BaseModel
 from typing import Optional
 from random import randrange
+import psycopg2
+import psycopg2.extras import ReadDictCursor()
 
 app = FastAPI()
 
@@ -12,6 +14,9 @@ class Post(BaseModel):
     content: str
     published: bool = True
     rating: Optional[int] = None
+
+try:
+    conn = psycopg2.connect(host="localhost", database="fastapi", user="postgres", password="Trumpet79?", cursor_factory=ReadDictCursor)
 
 my_posts = [{"title": "title of post 1", "content": "content of post 1", "id": 1}, {"title": "favourite foods", "content": "I like pizza", "id": 2}]
 
@@ -69,4 +74,3 @@ def update_post(id: int, post: Post): # we are going to convert it to an int
     my_posts[index] = post_dict
     return {"data": post_dict}
 
-    
