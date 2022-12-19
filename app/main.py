@@ -66,7 +66,7 @@ def get_post(id: int): # this is a path parameter
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id: {id} was not found")
     return {"post_detail": post}
 
-
+# returning 404 on error
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int):
     index = find_index_post(id)
