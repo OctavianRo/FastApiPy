@@ -59,6 +59,7 @@ def get_posts():
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post: Post): # we are going to validate the data based on the pydantic model
+
     # sanitizing inputs with the %s method 
     cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """, (post.title, post.content, post.published))
     new_post = cursor.fetchone()
@@ -80,10 +81,14 @@ def get_post(id: int): # this is a path parameter
 # returning 404 on error
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int):
-    index = find_index_post(id)
-    if index == None:
+    
+    cursor.execute("""DELETE FROM posts WHERE id = %s""", (str(id), ))
+    deleted_post = cursor.fetchone()
+    conn.commit()
+
+    if deleted_post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id: {id} does not exist") 
-    my_posts.pop(index)
+
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
