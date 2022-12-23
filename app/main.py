@@ -14,15 +14,22 @@ class Post(BaseModel):
     title: str  
     content: str
     published: bool = True
-    rating: Optional[int] = None
 
 # keep trying to connect ot the database 
 while True:
     try:
-        conn = psycopg2.connect(host="localhost", database="fastapi", user="postgres", password="Trumpet79?", cursor_factory=RealDictCursor)
+        conn = psycopg2.connect(
+            host="localhost", 
+            database="fastapi", 
+            user="postgres", 
+            password="Trumpet79?", 
+            cursor_factory=RealDictCursor
+        )
+
         cursor = conn.cursor()
         print("Database connection was successful!")
         break
+
     except Exception as error:
         print("Connecting to database failed :(")
         print("Error: ", error)
@@ -47,7 +54,8 @@ def root():
 
 @app.get("/posts")
 def get_posts():
-    pots = cursor.execute("""SELECT * FROM posts""")
+    cursor.execute("""SELECT * FROM posts""")
+    posts = cursor.fetchall()
     print(posts)
     return {"data":my_posts}
 
