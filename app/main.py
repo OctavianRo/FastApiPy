@@ -47,7 +47,6 @@ def find_index_post(id):
         if p['id'] == id:
             return i
 
-
 @app.get("/")
 def root():
     return {"message": "Welcome to the API"}
@@ -56,15 +55,17 @@ def root():
 def get_posts():
     cursor.execute("""SELECT * FROM posts""")
     posts = cursor.fetchall()
-    print(posts)
-    return {"data":my_posts}
+    return {"data":posts}
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post: Post): # we are going to validate the data based on the pydantic model
-    post_dict = post.dict()
-    post_dict["id"] = randrange(0, 1000000)
-    my_posts.append(post_dict)
-    return {"data": post_dict}
+    # sanitizing inputs with the %s method
+    cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """, (post.title, post.content, post.published))
+    new_post = cursor.fetchone()
+    # we have to commit these changes to db
+    conn.commit()
+    return {"data": new_post}
+
 
 @app.get("/posts/{id}")
 def get_post(id: int): # this is a path parameter
