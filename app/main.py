@@ -59,7 +59,7 @@ def get_posts():
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post: Post): # we are going to validate the data based on the pydantic model
-    # sanitizing inputs with the %s method
+    # sanitizing inputs with the %s method 
     cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """, (post.title, post.content, post.published))
     new_post = cursor.fetchone()
     # we have to commit these changes to db
@@ -69,8 +69,10 @@ def create_post(post: Post): # we are going to validate the data based on the py
 
 @app.get("/posts/{id}")
 def get_post(id: int): # this is a path parameter
+    # no SQL injections
+    cursor.execute("""SELECT * FROM posts WHERE id = %s""", (str(id)))
+    post = cursor.fetchone()
     
-    post = find_post(int(id))
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id: {id} was not found")
     return {"post_detail": post}
