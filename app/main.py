@@ -82,7 +82,7 @@ def get_post(id: int): # this is a path parameter
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int):
     
-    cursor.execute("""DELETE FROM posts WHERE id = %s""", (str(id), ))
+    cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING *""", (str(id), ))
     deleted_post = cursor.fetchone()
     conn.commit()
 
