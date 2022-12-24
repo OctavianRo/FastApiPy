@@ -31,6 +31,7 @@ while True:
         print("Database connection was successful!")
         break
 
+
     except Exception as error:
         print("Connecting to database failed :(")
         print("Error: ", error)
