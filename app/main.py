@@ -16,6 +16,7 @@ class Post(BaseModel):
     published: bool = True
 
 
+
 # keep trying to connect ot the database 
 while True:
     try:
