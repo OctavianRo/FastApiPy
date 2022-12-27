@@ -59,33 +59,44 @@ def find_index_post(id):
 def root():
     return {"message": "Welcome to the API"}
 
+
 @app.get("/sqlalchemy")
 def test_posts(db: Session = Depends(get_db)):
-    return {"status": "successfully connected"}
+    posts = db.query(models.Post).all()
+    return {"data": posts}
+
 
 @app.get("/posts")
-def get_posts():
-    cursor.execute("""SELECT * FROM posts""")
-    posts = cursor.fetchall()
+def get_posts(db: Session = Depends(get_db)):
+    # cursor.execute("""SELECT * FROM posts""")
+    # posts = cursor.fetchall()
+    posts = db.query(models.Post).all()
     return {"data":posts}
 
-@app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_post(post: Post): # we are going to validate the data based on the pydantic model
 
-    # sanitizing inputs with the %s method 
-    cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """, (post.title, post.content, post.published))
-    new_post = cursor.fetchone()
-    # we have to commit these changes to db
-    conn.commit()
+@app.post("/posts", status_code=status.HTTP_201_CREATED)
+def create_post(post: Post, db: Session = Depends(get_db)): # we are going to validate the data based on the pydantic model
+    # # sanitizing inputs with the %s method 
+    # cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """, (post.title, post.content, post.published))
+    # new_post = cursor.fetchone()
+    # # we have to commit these changes to db
+    # conn.commit()
+    new_post = models.Post(
+        **post.dict()
+    )
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
     return {"data": new_post}
 
 
 @app.get("/posts/{id}")
-def get_post(id: int): # this is a path parameter
+def get_post(id: int, db: Session = Depends(get_db)): # this is a path parameter
     # no SQL injections
-    cursor.execute("""SELECT * FROM posts WHERE id = %s""", (str(id)))
-    post = cursor.fetchone()
-    
+    # cursor.execute("""SELECT * FROM posts WHERE id = %s""", (str(id)))
+    # post = cursor.fetchone()
+    post = db.query(models.Post).filter(models.Post.id == id).first()
+
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id: {id} was not found")
     return {"post_detail": post}
