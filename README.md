@@ -5,4 +5,4 @@ py -3 -m venv venv
 
 
 # We use Uvicor to get the app up and running
-uvicorn main:app --reload
+uvicorn app.main:app 
