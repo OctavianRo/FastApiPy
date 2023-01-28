@@ -4,12 +4,17 @@ from . import models
 from .database import engine
 from .routers import post, user, auth, vote
 from .config import Settings
+import socket
+import sys
 
 # models.Base.metadata.create_all(bind=engine)
 
-origins = ["https://www.google.com"]
+hostname = socket.gethostname()
+
+version = f"{sys.version_info.major}.{sys.version_info.minor}"
 
 app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -18,8 +23,6 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-
-
 app.include_router(post.router)
 app.include_router(user.router)
 app.include_router(auth.router)
@@ -27,4 +30,6 @@ app.include_router(vote.router)
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to the API"}
+    return {"message": "Welcome to the API",
+    "name": "my-app",
+    "host":hostname}
