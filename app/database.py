@@ -6,7 +6,6 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from .config import settings
 
-t
 SQLALCHEMY_DATABASE_URL = f'postgresql://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}'
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
@@ -22,4 +21,3 @@ def get_db():
         yield db
     except:
         db.close()
-        
