@@ -9,10 +9,6 @@ import sys
 
 # models.Base.metadata.create_all(bind=engine)
 
-hostname = socket.gethostname()
-
-version = f"{sys.version_info.major}.{sys.version_info.minor}"
-
 app = FastAPI()
 
 origins = ["*"]
@@ -30,6 +26,4 @@ app.include_router(vote.router)
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to the API",
-    "name": "my-app",
-    "host":hostname}
+    return {"message": "Welcome to the API"}
