@@ -3,6 +3,7 @@ __pycache__/
 app/__pycache__/
 .env
 alembic/__pycache__
+Instructions.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
